@@ -40,7 +40,7 @@ textY = 10
 over_font = pygame.font.Font('funfont.ttf', 64)
 
 def show_score(x, y):
-    score = font.render("Score: " + str(score_value), True, (0, 0, 180)) # RGB= Blue (out of 255)
+    score = font.render("Score: " + str(score_value), True, (50, 150, 100)) # RGB= Blue (out of 255)
     screen.blit(score, (x, y))
 
 def game_over_text():
