@@ -1,8 +1,13 @@
-GRID_SIZE = 50
-ROWS = 10
-COLS = 12
+# config/settings.py
 
-WINDOW_WIDTH = COLS * GRID_SIZE
-WINDOW_HEIGHT = ROWS * GRID_SIZE
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 600
+FPS = 30
 
-FPS = 5
+# Grid size (number of rows/cols)
+GRID_ROWS = 12
+GRID_COLS = 16
+
+# Cell size is computed based on window
+CELL_WIDTH = WINDOW_WIDTH // GRID_COLS
+CELL_HEIGHT = WINDOW_HEIGHT // GRID_ROWS
