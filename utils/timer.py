@@ -1,4 +1,5 @@
 # TIMER
+import pygame
 
 game_started = False
 timer_running = False
