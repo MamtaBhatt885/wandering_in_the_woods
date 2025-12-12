@@ -7,6 +7,7 @@ from game.stats import Stats
 from ui.menu import show_menu
 from ui.celebration import celebrate
 
+
 pygame.init()
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("Wandering in the Woods")
@@ -52,3 +53,15 @@ def run():
 
 run()
 pygame.quit()
+
+pygame.init()
+pygame.mixer.init()
+
+# Load sounds
+collision_sound = pygame.mixer.Sound("sounds/collision.mp3")
+bg_music = "sounds/bg_music.mp3"
+
+# Play background music (loop forever)
+pygame.mixer.music.load(bg_music)
+pygame.mixer.music.play(-1)      # -1 = infinite loop
+
