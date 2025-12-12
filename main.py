@@ -6,6 +6,9 @@ from game.collision import collided, reset_positions
 from game.stats import Stats
 from ui.menu import show_menu
 from ui.celebration import celebrate
+import pygame
+
+
 
 
 pygame.init()
