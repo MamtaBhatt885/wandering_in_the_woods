@@ -1,122 +1,148 @@
 import pygame
 import math
 import random
+import socket
+import json
+import threading
 
-# Initialize the pygame
+# -------------------- CONFIG --------------------
+WIDTH, HEIGHT = 800, 600
+SERVER_PORT = 5555
+SPEED = 4
+# ------------------------------------------------
+
 pygame.init()
-
-# create the screen
-screen = pygame.display.set_mode((800, 600)) # (width, height)
-
-# Background
-background = pygame.image.load('woods.png')
-
-# Title and Icon
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Wandering in the Woods")
-icon = pygame.image.load('001-walk.png') # Use flatiron.com to download a 32x png
+
+# Assets
+background = pygame.image.load("woods.png")
+icon = pygame.image.load("001-walk.png")
 pygame.display.set_icon(icon)
 
-# Player (must
-playerImg = pygame.image.load('adventurer.png') # flatiron.com 64xpng
-playerX = 370 # X coordinate of player = towards middle
-playerY = 480 # Y coordinate of player = towards bottom
-playerX_change = 0 # provides option to move player left and right
+playerImg = pygame.image.load("adventurer.png")
+friendImg = pygame.image.load("adventurefriend.png")
 
-# Friend
-friendImg = pygame.image.load('adventurefriend.png') # 64xpng by max.icons - Flaticon</a> <a href="https://www.flaticon.com/free-icons/hiker" title="hiker icons">Hiker
-friendX = random.randint(0, 736) # (smallest, largest) poss random int
-friendY = random.randint(50, 105)
-friendX_change = 1
-friendY_change = 40
+font = pygame.font.Font("funfont.ttf", 32)
+big_font = pygame.font.Font("funfont.ttf", 48)
 
-# Score
-score_value = 0
-font = pygame.font.Font('funfont.ttf', 32) # font type, font size ...find more fonts at dafont.com "Super Croissant"
+# -------------------- NETWORK --------------------
+class Network:
+    def __init__(self, host, code):
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.connect((host, SERVER_PORT))
+        self.client.send(code.encode())
 
-textX = 10
-textY = 10
+    def send(self, data):
+        self.client.send(json.dumps(data).encode())
+        return json.loads(self.client.recv(2048).decode())
 
-# Game Over text
-over_font = pygame.font.Font('funfont.ttf', 64)
+# -------------------- SERVER --------------------
+players = []
 
-def show_score(x, y):
-    score = font.render("Score: " + str(score_value), True, (50, 150, 100)) # RGB= Blue (out of 255)
-    screen.blit(score, (x, y))
+def server_thread():
+    global players
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind(("0.0.0.0", SERVER_PORT))
+    server.listen()
 
-def game_over_text():
-    over_text = font.render("Friend Found!", True, (150, 0, 0)) # Red
-    screen.blit(over_text, (300, 250)) #middle of screen
+    while True:
+        conn, _ = server.accept()
+        players.append({"x": 100, "y": 100})
 
-def player(x,y):
-    screen.blit(playerImg, (x, y))
+        def handle(c, idx):
+            while True:
+                try:
+                    data = json.loads(c.recv(1024).decode())
+                    players[idx] = data
+                    c.send(json.dumps(players).encode())
+                except:
+                    break
 
-def friend(x,y):
-    screen.blit(friendImg, (x, y))
+        threading.Thread(target=handle, args=(conn, len(players)-1)).start()
 
-def isCollision(playerX, playerY, friendX, friendY):
-    distance = math.sqrt((math.pow(playerX-friendX, 2)) + (math.pow(playerY-friendY, 2)))
-    if distance < 27:
-        return True
-    else:
-        return False
+# -------------------- MENU --------------------
+def menu():
+    while True:
+        screen.fill((0, 100, 0))
+        host = big_font.render("HOST GAME", True, (255,255,255))
+        join = big_font.render("JOIN GAME", True, (255,255,255))
 
+        screen.blit(host, (280, 220))
+        screen.blit(join, (300, 300))
 
-# Game Loop
+        for e in pygame.event.get():
+            if e.type == pygame.QUIT:
+                pygame.quit(); quit()
+            if e.type == pygame.MOUSEBUTTONDOWN:
+                if 280 < e.pos[0] < 520 and 220 < e.pos[1] < 260:
+                    return "HOST"
+                if 300 < e.pos[0] < 500 and 300 < e.pos[1] < 340:
+                    return "JOIN"
+
+        pygame.display.update()
+
+# -------------------- INPUT --------------------
+def get_input():
+    dx = dy = 0
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_w]: dy -= SPEED
+    if keys[pygame.K_s]: dy += SPEED
+    if keys[pygame.K_a]: dx -= SPEED
+    if keys[pygame.K_d]: dx += SPEED
+    return dx, dy
+
+# -------------------- COLLISION --------------------
+def isCollision(x1,y1,x2,y2):
+    return math.hypot(x1-x2, y1-y2) < 40
+
+# -------------------- START --------------------
+choice = menu()
+
+if choice == "HOST":
+    threading.Thread(target=server_thread, daemon=True).start()
+    room_code = "WOODS"
+    host_ip = "127.0.0.1"
+    print("HOSTING ROOM:", room_code)
+
+else:
+    room_code = input("Enter Room Code: ")
+    host_ip = input("Enter Host IP: ")
+
+net = Network(host_ip, room_code)
+
+player = {"x": random.randint(50,700), "y": random.randint(50,500)}
+
+# -------------------- GAME LOOP --------------------
+clock = pygame.time.Clock()
 running = True
-while running:
+found = False
 
-    # RGB + Red, Green, Blue
-    screen.fill((0, 100, 0))  # green
-    # Background Image
-    screen.blit(background, (0, 0))
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+while running:
+    clock.tick(60)
+    screen.blit(background, (0,0))
+
+    for e in pygame.event.get():
+        if e.type == pygame.QUIT:
             running = False
 
-    # if keystroke pressed, check right or left
-    if event.type == pygame.KEYDOWN: # "DOWN" means a key is pressed
-        if event.key == pygame.K_LEFT: # Left arrow key
-            print("Left arrow pressed")
-            playerX_change = -1
-        if event.key == pygame.K_RIGHT: # Right arrow key
-            print("Right arrow pressed")
-            playerX_change = 1
-    if event.type == pygame.KEYUP: # "UP" means a key has been released
-        if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
-            print("Keystroke has been released")
-            playerX_change = 0
+    dx, dy = get_input()
+    player["x"] += dx
+    player["y"] += dy
 
-    # Keep player within the boundaries of the screen
-    playerX += playerX_change
+    state = net.send(player)
 
-    if playerX <= 0:
-        playerX = 0
-    elif playerX >= 736:
-        playerX = 736
+    for p in state:
+        screen.blit(friendImg, (p["x"], p["y"]))
+        if isCollision(player["x"], player["y"], p["x"], p["y"]):
+            found = True
 
-    # Move friend back and forth within boundary of screen
-    friendX += friendX_change
+    screen.blit(playerImg, (player["x"], player["y"]))
 
-    if friendX <= 0:
-        friendX_change = 1
-        friendY += friendY_change
-    elif friendX >= 736:
-        friendX_change = -1
-        friendY += friendY_change
+    if found:
+        text = big_font.render("FRIEND FOUND!", True, (200,0,0))
+        screen.blit(text, (250, 260))
 
-    # Game Over
-    if friendY > 200 and friendX == playerX:
-        game_over_text()
-        break
+    pygame.display.update()
 
-
-    # Collision
-    collision = isCollision(friendX, friendY, playerX, playerY)
-    if collision:
-        print("You have found your friend")
-
-    player(playerX, playerY)
-    friend(friendX, friendY)
-    show_score(textX, textY)
-    pygame.display.update() # Display should always be updating
-
+pygame.quit()
