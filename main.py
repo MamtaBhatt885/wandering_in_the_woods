@@ -4,6 +4,10 @@ import random
 import socket
 import json
 import threading
+import time
+
+
+
 
 # -------------------- CONFIG --------------------
 WIDTH, HEIGHT = 800, 600
@@ -97,10 +101,12 @@ def isCollision(x1,y1,x2,y2):
     return math.hypot(x1-x2, y1-y2) < 40
 
 # -------------------- START --------------------
+# -------------------- START --------------------
 choice = menu()
 
 if choice == "HOST":
     threading.Thread(target=server_thread, daemon=True).start()
+    time.sleep(2)  # ✅ ADD IT HERE
     room_code = "WOODS"
     host_ip = "127.0.0.1"
     print("HOSTING ROOM:", room_code)
@@ -108,6 +114,7 @@ if choice == "HOST":
 else:
     room_code = input("Enter Room Code: ")
     host_ip = input("Enter Host IP: ")
+
 
 net = Network(host_ip, room_code)
 
