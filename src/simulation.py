@@ -1,6 +1,3 @@
-import pygame
-from player import Player
-
 class Simulation:
     def __init__(self, rows, cols, players, sound):
         self.rows = rows

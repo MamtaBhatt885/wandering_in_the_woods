@@ -1,5 +1,5 @@
 import pygame
-from config import CELL_SIZE, GRID_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT
+from src.config import CELL_SIZE, GRID_COLOR, SCREEN_WIDTH, SCREEN_HEIGHT
 
 class Grid:
     def __init__(self, rows, cols):

@@ -1,0 +1,29 @@
+Wandering in the Woods – User Guide
+
+Overview
+Wandering in the Woods is an educational simulation designed to help students learn computational
+thinking concepts such as randomness, movement, and data collection through interactive exploration.
+
+System Requirements
+1 • Operating System: Windows, macOS, or Linux
+2 • Python 3.10 or higher
+3 • Pygame library installed
+
+Installation
+1. Download the project from the provided GitHub repository.
+2. Install Python from https://www.python.org.
+3. Install required dependencies using: pip install pygame
+4. Navigate to the project folder and run src/main.py.
+
+
+How to Use the Simulation
+1 • Use arrow keys to configure the grid dimensions.
+2 • Select the number of players using number keys.
+3 • Press ENTER to proceed to player placement.
+4 • Click on grid cells to place players.
+5 • Press ENTER to start the simulation.
+
+Output and Feedback
+
+After each simulation run, statistics such as the number of runs, minimum steps, maximum steps, and
+average steps are displayed on the screen

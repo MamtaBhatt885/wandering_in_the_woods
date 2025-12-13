@@ -1,0 +1,32 @@
+Wandering in the Woods – Design Document
+
+
+1. Software Requirements Specification (SRS)
+The Wandering in the Woods simulation shall allow students to configure a grid-based environment,
+place multiple players, and observe randomized movement until players meet. The system shall record
+and display statistical data for each run.
+
+
+Functional Requirements
+1 • Allow grid size selection (rows and columns).
+2 • Allow 2–4 players to be placed manually.
+3 • Simulate random movement of players.
+4 • Detect when players meet.
+5 • Display run statistics (min, max, average).
+
+
+Non-Functional Requirements
+1 • The interface shall be simple and child-friendly.
+2 • The system shall be robust to random input.
+3 • The program shall run without requiring compilation.
+2. Software Design
+The system is modular and object-oriented. Each major responsibility is encapsulated in a separate
+class.
+
+
+Main Components
+1 • main.py: Controls program flow and rendering.
+2 • Grid: Manages grid layout and drawing.
+3 • Player: Represents a player and its position.
+4 • Simulation: Controls player movement and meeting logic.
+5 • Stats: Collects and summarizes run statistics

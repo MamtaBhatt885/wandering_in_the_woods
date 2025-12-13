@@ -1,6 +1,6 @@
 import pygame
-from config import *
-from grid import Grid
+from src.config import *
+from src.grid import Grid
 from player import Player
 from simulation import Simulation
 from stats import Stats
@@ -12,17 +12,17 @@ pygame.display.set_caption("Wandering in the Woods")
 clock = pygame.time.Clock()
 
 # ================= ASSETS =================
-background = pygame.image.load("assets/background.png").convert_alpha()
+background = pygame.image.load("../assets/images/background.png").convert_alpha()
 
 background = pygame.transform.smoothscale(
     background,
     (SCREEN_WIDTH, SCREEN_HEIGHT)
 )
 
-sprite = pygame.image.load("assets/sprite.png").convert_alpha()
+sprite = pygame.image.load("../assets/images/sprite.png").convert_alpha()
 sprite = pygame.transform.scale(sprite, (CELL_SIZE, CELL_SIZE))
 
-meet_sound = pygame.mixer.Sound("assets/meet.wav")
+meet_sound = pygame.mixer.Sound("../assets/sounds/meet.wav")
 
 font = pygame.font.SysFont(None, 28)
 big_font = pygame.font.SysFont(None, 40)
